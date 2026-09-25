@@ -1,2 +1,43 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@import "react-toastify/dist/ReactToastify.css";
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Custom styling for Toastify to seamlessly match FitLog athletic theme */
+.Toastify__toast-container {
+  z-index: 99999 !important;
+}
+
+.Toastify__toast {
+  background: #141720 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6) !important;
+  font-family: inherit !important;
+}
+
+.Toastify__toast--success {
+  border-left: 4px solid #c6ff00 !important;
+}
+
+.Toastify__toast--warning {
+  border-left: 4px solid #f59e0b !important;
+}
+
+.Toastify__toast--info {
+  border-left: 4px solid #38bdf8 !important;
+}
+
+.Toastify__progress-bar--success {
+  background: #c6ff00 !important;
+}
+
+.Toastify__close-button {
+  color: #9ca3af !important;
+}

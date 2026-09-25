@@ -4,19 +4,27 @@ import React from 'react';
 import { usePlan } from '@/context/PlanContext';
 
 const WorkoutActionButtons = ({ item }) => {
-    const { addToPlan, toggleSave, isInPlan, isSaved, isLoaded } = usePlan();
+    const { addToPlan, removeFromPlan, toggleSave, isInPlan, isSaved, isLoaded } = usePlan();
 
     if (!item) return null;
 
     const inPlan = isLoaded && isInPlan(item.id);
     const saved = isLoaded && isSaved(item.id);
 
+    const handlePlanClick = () => {
+        if (inPlan) {
+            removeFromPlan(item.id);
+        } else {
+            addToPlan(item);
+        }
+    };
+
     return (
         <div className="flex flex-wrap items-center gap-3.5 mt-5">
             {/* Add to today's plan button */}
             <button
                 type="button"
-                onClick={() => addToPlan(item)}
+                onClick={handlePlanClick}
                 className={`text-xs sm:text-sm px-5 py-2.5 sm:py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 active:scale-95 shadow-md cursor-pointer font-extrabold ${
                     inPlan
                         ? 'bg-[#232a16] text-[#c6ff00] border border-[#c6ff00]/50'

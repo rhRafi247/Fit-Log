@@ -4,6 +4,11 @@ import Nav from "@/component/Nav";
 import Footer from "@/component/Footer";
 import { PlanProvider } from "@/context/PlanContext";
 
+export const metadata = {
+  title: "FITLOG | Workout Tracker & Exercise Library",
+  description: "Track your daily fitness routines, explore exercise libraries, and build your custom workout plan with FitLog.",
+};
+
 export default function RootLayout({ children }) {
   return (
     <html

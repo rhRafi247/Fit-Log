@@ -19,6 +19,7 @@ export const PlanProvider = ({ children }) => {
             const storedSaved = localStorage.getItem('fitlog_saved');
             const storedCompleted = localStorage.getItem('fitlog_completed');
 
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             if (storedPlan) setPlan(JSON.parse(storedPlan));
             if (storedSaved) setSaved(JSON.parse(storedSaved));
             if (storedCompleted) setCompleted(JSON.parse(storedCompleted));

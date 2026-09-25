@@ -2,8 +2,19 @@ import Card from '@/component/Card';
 import React from 'react';
 
 const getData = async () => {
-    const res = await fetch('https://api.abcz.workers.dev/api/fitlog');
-    return res.json();
+    try {
+        const res = await fetch('https://api.abcz.workers.dev/api/fitlog', {
+            next: { revalidate: 60 },
+        });
+        if (!res.ok) {
+            throw new Error(`Failed to fetch workouts: ${res.status}`);
+        }
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        console.error('Error fetching workouts:', error);
+        return [];
+    }
 };
 
 const Page = async () => {

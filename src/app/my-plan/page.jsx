@@ -20,18 +20,11 @@ const MyPlanContent = () => {
     const searchParams = useSearchParams();
     const tabQuery = searchParams.get('tab');
 
-    const [activeTab, setActiveTab] = useState("Today's Plan");
+    const [userTab, setUserTab] = useState(null);
+    const activeTab = userTab ?? (tabQuery === 'saved' ? 'Saved' : "Today's Plan");
+    const setActiveTab = (tab) => setUserTab(tab);
     const [sortBy, setSortBy] = useState('Duration');
     const [isSortOpen, setIsSortOpen] = useState(false);
-
-    // Sync tab with URL query parameter (e.g. from Nav clicks)
-    useEffect(() => {
-        if (tabQuery === 'saved') {
-            setActiveTab('Saved');
-        } else if (tabQuery === 'plan') {
-            setActiveTab("Today's Plan");
-        }
-    }, [tabQuery]);
 
     const sortOptions = ['Duration', 'Calories', 'Rating'];
 
@@ -53,13 +46,13 @@ const MyPlanContent = () => {
 
         return listCopy.sort((a, b) => {
             if (sortBy === 'Duration') {
-                return (Number(b.duration) || 0) - (Number(a.duration) || 0);
+                return (Number(a.duration) || 0) - (Number(b.duration) || 0);
             }
             if (sortBy === 'Calories') {
-                return (Number(b.caloriesBurned) || 0) - (Number(a.caloriesBurned) || 0);
+                return (Number(a.caloriesBurned) || 0) - (Number(b.caloriesBurned) || 0);
             }
             if (sortBy === 'Rating') {
-                return (Number(b.rating) || 0) - (Number(a.rating) || 0);
+                return (Number(a.rating) || 0) - (Number(b.rating) || 0);
             }
             return 0;
         });

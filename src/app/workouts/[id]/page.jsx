@@ -1,13 +1,31 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import React from 'react';
 import WorkoutActionButtons from '@/component/WorkoutActionButtons';
+
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+    try {
+        const res = await fetch('https://api.abcz.workers.dev/api/fitlog');
+        if (res.ok) {
+            const list = await res.json();
+            if (Array.isArray(list)) {
+                return list.map((item) => ({ id: String(item.id) }));
+            }
+        }
+    } catch (e) {
+        console.error('generateStaticParams error:', e);
+    }
+    return [];
+}
 
 const getData = async (id) => {
     if (!id || id === 'undefined') return null;
 
     try {
         const res = await fetch(`https://api.abcz.workers.dev/api/fitlog/${id}`, {
-            cache: 'no-store',
+            next: { revalidate: 60 },
         });
 
         if (res.ok) {
@@ -21,7 +39,7 @@ const getData = async (id) => {
     // Fallback: fetch full list and match item by id
     try {
         const listRes = await fetch('https://api.abcz.workers.dev/api/fitlog', {
-            cache: 'no-store',
+            next: { revalidate: 60 },
         });
         if (listRes.ok) {
             const list = await listRes.json();
@@ -42,20 +60,7 @@ const Page = async ({ params }) => {
     const item = await getData(id);
 
     if (!item) {
-        return (
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-                <h1 className="text-3xl font-black text-white uppercase tracking-tight">Workout Not Found</h1>
-                <p className="mt-2 text-neutral-400 max-w-md text-sm">
-                    The workout you are looking for does not exist or may have been removed.
-                </p>
-                <Link
-                    href="/workouts"
-                    className="mt-5 bg-[#c6ff00] hover:bg-[#bbf000] text-black font-extrabold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all"
-                >
-                    Back to Workouts
-                </Link>
-            </div>
-        );
+        notFound();
     }
 
     const {

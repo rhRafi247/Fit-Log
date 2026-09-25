@@ -1,0 +1,2 @@
+# Redirects file for Netlify / SPA hosting to ensure page refresh works without 404 errors
+/*    /index.html   200
