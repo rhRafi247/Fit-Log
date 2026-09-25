@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PlanContext = createContext();
 
@@ -9,7 +11,6 @@ export const PlanProvider = ({ children }) => {
     const [saved, setSaved] = useState([]);
     const [completed, setCompleted] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [toastMessage, setToastMessage] = useState(null);
 
     // Hydrate state from localStorage on client mount
     useEffect(() => {
@@ -28,23 +29,24 @@ export const PlanProvider = ({ children }) => {
         }
     }, []);
 
-    const showToast = (msg, type = 'info') => {
-        setToastMessage({ msg, type });
-        setTimeout(() => {
-            setToastMessage(null);
-        }, 3000);
-    };
-
     const addToPlan = (workout) => {
         if (!workout) return { success: false };
 
         if (plan.some((item) => String(item.id) === String(workout.id))) {
-            showToast('Already added to today\'s plan!', 'warning');
+            toast.warning('Already added to today\'s plan!', {
+                position: 'bottom-right',
+                theme: 'dark',
+                autoClose: 3000,
+            });
             return { success: false, reason: 'exists' };
         }
 
         if (plan.length >= 5) {
-            showToast('Cap of 5 lifts for today reached!', 'warning');
+            toast.warning('Cap of 5 lifts for today reached!', {
+                position: 'bottom-right',
+                theme: 'dark',
+                autoClose: 3000,
+            });
             return { success: false, reason: 'limit' };
         }
 
@@ -54,11 +56,16 @@ export const PlanProvider = ({ children }) => {
             localStorage.setItem('fitlog_today_plan', JSON.stringify(newPlan));
         } catch (e) {}
 
-        showToast(`Added "${workout.name}" to today's plan!`, 'success');
+        toast.success(`Added "${workout.name}" to today's plan!`, {
+            position: 'bottom-right',
+            theme: 'dark',
+            autoClose: 3000,
+        });
         return { success: true };
     };
 
     const removeFromPlan = (id) => {
+        const itemToRemove = plan.find((item) => String(item.id) === String(id));
         const newPlan = plan.filter((item) => String(item.id) !== String(id));
         setPlan(newPlan);
 
@@ -70,7 +77,11 @@ export const PlanProvider = ({ children }) => {
             localStorage.setItem('fitlog_completed', JSON.stringify(newCompleted));
         } catch (e) {}
 
-        showToast('Removed workout from today\'s plan', 'info');
+        toast.info(`Removed "${itemToRemove?.name || 'Workout'}" from today's plan`, {
+            position: 'bottom-right',
+            theme: 'dark',
+            autoClose: 3000,
+        });
     };
 
     const toggleSave = (workout) => {
@@ -79,10 +90,18 @@ export const PlanProvider = ({ children }) => {
         let newSaved;
         if (exists) {
             newSaved = saved.filter((item) => String(item.id) !== String(workout.id));
-            showToast(`Removed "${workout.name}" from saved`, 'info');
+            toast.info(`Removed "${workout.name}" from saved`, {
+                position: 'bottom-right',
+                theme: 'dark',
+                autoClose: 3000,
+            });
         } else {
             newSaved = [...saved, workout];
-            showToast(`Saved "${workout.name}" for later!`, 'success');
+            toast.success(`Saved "${workout.name}" for later!`, {
+                position: 'bottom-right',
+                theme: 'dark',
+                autoClose: 3000,
+            });
         }
         setSaved(newSaved);
         try {
@@ -91,16 +110,23 @@ export const PlanProvider = ({ children }) => {
     };
 
     const removeFromSaved = (id) => {
+        const itemToRemove = saved.find((item) => String(item.id) === String(id));
         const newSaved = saved.filter((item) => String(item.id) !== String(id));
         setSaved(newSaved);
         try {
             localStorage.setItem('fitlog_saved', JSON.stringify(newSaved));
         } catch (e) {}
-        showToast('Removed from saved list', 'info');
+
+        toast.info(`Removed "${itemToRemove?.name || 'Workout'}" from saved`, {
+            position: 'bottom-right',
+            theme: 'dark',
+            autoClose: 3000,
+        });
     };
 
     const toggleCompleted = (id) => {
         const isDone = completed.some((cId) => String(cId) === String(id));
+        const item = plan.find((w) => String(w.id) === String(id));
         const newCompleted = isDone
             ? completed.filter((cId) => String(cId) !== String(id))
             : [...completed, id];
@@ -108,6 +134,20 @@ export const PlanProvider = ({ children }) => {
         try {
             localStorage.setItem('fitlog_completed', JSON.stringify(newCompleted));
         } catch (e) {}
+
+        if (!isDone) {
+            toast.success(`Marked "${item?.name || 'Workout'}" as completed! ✓`, {
+                position: 'bottom-right',
+                theme: 'dark',
+                autoClose: 3000,
+            });
+        } else {
+            toast.info(`Unmarked "${item?.name || 'Workout'}"`, {
+                position: 'bottom-right',
+                theme: 'dark',
+                autoClose: 2000,
+            });
+        }
     };
 
     const isInPlan = (id) => plan.some((item) => String(item.id) === String(id));
@@ -133,22 +173,19 @@ export const PlanProvider = ({ children }) => {
         >
             {children}
 
-            {/* Toast Notification */}
-            {toastMessage && (
-                <div className="fixed bottom-6 right-6 z-50 transition-all duration-300 animate-in fade-in slide-in-from-bottom-5">
-                    <div
-                        className={`px-5 py-3 rounded-2xl shadow-2xl text-xs sm:text-sm font-bold flex items-center gap-2.5 border backdrop-blur-md ${
-                            toastMessage.type === 'success'
-                                ? 'bg-[#182412]/95 text-[#c6ff00] border-[#c6ff00]/40'
-                                : toastMessage.type === 'warning'
-                                ? 'bg-[#291e12]/95 text-[#fbbf24] border-[#fbbf24]/40'
-                                : 'bg-[#161822]/95 text-white border-[#232733]'
-                        }`}
-                    >
-                        <span>{toastMessage.msg}</span>
-                    </div>
-                </div>
-            )}
+            {/* React Toastify Container */}
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
         </PlanContext.Provider>
     );
 };
