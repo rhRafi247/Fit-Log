@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import { usePlan } from '@/context/PlanContext';
 
 function Nav() {
     const pathname = usePathname();
+    const { plan, saved, isLoaded } = usePlan();
 
     const navLinks = [
         { name: 'Home', href: '/' },
@@ -78,9 +80,25 @@ function Nav() {
                         })}
                     </ul>
                 </div>
-                <div className="navbar-end flex gap-5">
-                    <p>Plan <span>0</span></p>
-                    <p>Saved <span>0</span></p>
+                <div className="navbar-end flex items-center gap-5 text-sm font-semibold">
+                    <Link
+                        href="/my-plan?tab=plan"
+                        className="flex items-center gap-1.5 text-neutral-300 hover:text-white transition-colors cursor-pointer"
+                    >
+                        <span>Plan</span>
+                        <span className="bg-[#c6ff00] text-black font-black text-xs px-2 py-0.5 rounded-full leading-none min-w-[20px] text-center">
+                            {isLoaded ? plan.length : 0}
+                        </span>
+                    </Link>
+                    <Link
+                        href="/my-plan?tab=saved"
+                        className="flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                        <span>Saved</span>
+                        <span className="bg-neutral-800 text-neutral-300 font-bold text-xs px-2 py-0.5 rounded-full leading-none min-w-[20px] text-center">
+                            {isLoaded ? saved.length : 0}
+                        </span>
+                    </Link>
                 </div>
             </div>
         </div>

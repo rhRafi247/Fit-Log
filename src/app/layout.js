@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/component/Nav";
+import { PlanProvider } from "@/context/PlanContext";
 
 export default function RootLayout({ children }) {
   return (
@@ -8,9 +9,11 @@ export default function RootLayout({ children }) {
       lang="en"
       data-theme="dark"
     >
-      <body className="min-h-full flex flex-col">
-        <Nav />
-        <div>{children}</div>
+      <body className="min-h-screen flex flex-col bg-[#0d0f14] text-white">
+        <PlanProvider>
+          <Nav />
+          <main className="flex-1 flex flex-col">{children}</main>
+        </PlanProvider>
       </body>
     </html>
   );
