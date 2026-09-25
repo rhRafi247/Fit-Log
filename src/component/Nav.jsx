@@ -4,6 +4,7 @@ import React from 'react';
 
 function Nav() {
     const navItem = <>
+        <li><Link href={'/'}>Home</Link></li>
         <li><Link href={'/workouts'}>Workouts</Link></li>
         <li><Link href={'/my-plan'}>My Plan</Link></li>
     </>
