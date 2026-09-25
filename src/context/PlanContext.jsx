@@ -33,7 +33,8 @@ export const PlanProvider = ({ children }) => {
     const addToPlan = (workout) => {
         if (!workout) return { success: false };
 
-        if (plan.some((item) => String(item.id) === String(workout.id))) {
+        const workoutId = workout.id !== undefined ? String(workout.id) : String(workout._id ?? '');
+        if (plan.some((item) => String(item.id !== undefined ? item.id : item._id) === workoutId)) {
             toast.warning('Already added to today\'s plan!', {
                 position: 'bottom-right',
                 theme: 'dark',
@@ -66,8 +67,8 @@ export const PlanProvider = ({ children }) => {
     };
 
     const removeFromPlan = (id) => {
-        const itemToRemove = plan.find((item) => String(item.id) === String(id));
-        const newPlan = plan.filter((item) => String(item.id) !== String(id));
+        const itemToRemove = plan.find((item) => String(item.id !== undefined ? item.id : item._id) === String(id));
+        const newPlan = plan.filter((item) => String(item.id !== undefined ? item.id : item._id) !== String(id));
         setPlan(newPlan);
 
         const newCompleted = completed.filter((cId) => String(cId) !== String(id));
@@ -87,10 +88,11 @@ export const PlanProvider = ({ children }) => {
 
     const toggleSave = (workout) => {
         if (!workout) return;
-        const exists = saved.some((item) => String(item.id) === String(workout.id));
+        const workoutId = workout.id !== undefined ? String(workout.id) : String(workout._id ?? '');
+        const exists = saved.some((item) => String(item.id !== undefined ? item.id : item._id) === workoutId);
         let newSaved;
         if (exists) {
-            newSaved = saved.filter((item) => String(item.id) !== String(workout.id));
+            newSaved = saved.filter((item) => String(item.id !== undefined ? item.id : item._id) !== workoutId);
             toast.info(`Removed "${workout.name}" from saved`, {
                 position: 'bottom-right',
                 theme: 'dark',
@@ -111,8 +113,8 @@ export const PlanProvider = ({ children }) => {
     };
 
     const removeFromSaved = (id) => {
-        const itemToRemove = saved.find((item) => String(item.id) === String(id));
-        const newSaved = saved.filter((item) => String(item.id) !== String(id));
+        const itemToRemove = saved.find((item) => String(item.id !== undefined ? item.id : item._id) === String(id));
+        const newSaved = saved.filter((item) => String(item.id !== undefined ? item.id : item._id) !== String(id));
         setSaved(newSaved);
         try {
             localStorage.setItem('fitlog_saved', JSON.stringify(newSaved));
@@ -127,7 +129,7 @@ export const PlanProvider = ({ children }) => {
 
     const toggleCompleted = (id) => {
         const isDone = completed.some((cId) => String(cId) === String(id));
-        const item = plan.find((w) => String(w.id) === String(id));
+        const item = plan.find((w) => String(w.id !== undefined ? w.id : w._id) === String(id));
         const newCompleted = isDone
             ? completed.filter((cId) => String(cId) !== String(id))
             : [...completed, id];
@@ -151,8 +153,8 @@ export const PlanProvider = ({ children }) => {
         }
     };
 
-    const isInPlan = (id) => plan.some((item) => String(item.id) === String(id));
-    const isSaved = (id) => saved.some((item) => String(item.id) === String(id));
+    const isInPlan = (id) => plan.some((item) => String(item.id !== undefined ? item.id : item._id) === String(id));
+    const isSaved = (id) => saved.some((item) => String(item.id !== undefined ? item.id : item._id) === String(id));
     const isCompleted = (id) => completed.some((cId) => String(cId) === String(id));
 
     return (

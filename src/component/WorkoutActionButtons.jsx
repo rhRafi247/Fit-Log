@@ -4,19 +4,16 @@ import React from 'react';
 import { usePlan } from '@/context/PlanContext';
 
 const WorkoutActionButtons = ({ item }) => {
-    const { addToPlan, removeFromPlan, toggleSave, isInPlan, isSaved, isLoaded } = usePlan();
+    const { addToPlan, toggleSave, isInPlan, isSaved, isLoaded } = usePlan();
 
     if (!item) return null;
 
-    const inPlan = isLoaded && isInPlan(item.id);
-    const saved = isLoaded && isSaved(item.id);
+    const itemId = item.id !== undefined ? item.id : item._id;
+    const inPlan = isLoaded && isInPlan(itemId);
+    const saved = isLoaded && isSaved(itemId);
 
     const handlePlanClick = () => {
-        if (inPlan) {
-            removeFromPlan(item.id);
-        } else {
-            addToPlan(item);
-        }
+        addToPlan(item);
     };
 
     return (
